@@ -279,7 +279,7 @@ export interface AgentConfig {
    */
   options?: Record<string, unknown>;
   /**
-   * MCP integrations
+   * MCP integrations - Array of Client objects
    */
   integrations?: Client[];
   /**
