@@ -5,7 +5,7 @@ import {
   UnsupportedModelError,
   UnsupportedModelProviderError,
 } from "@/types/stagehandErrors";
-import { ToolSet } from "ai/dist";
+import { ToolSet } from "ai";
 import { Page } from "../../types/page";
 import { Stagehand } from "../index";
 import { loadApiKeyFromEnv, providerEnvVarMap } from "../utils";
