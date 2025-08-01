@@ -1,19 +1,16 @@
 import { AgentType } from "@/types/agent";
 import { LogLine } from "@/types/log";
 import {
-  MissingEnvironmentVariableError,
   UnsupportedModelError,
   UnsupportedModelProviderError,
 } from "@/types/stagehandErrors";
 import { ToolSet } from "ai";
 import { Page } from "../../types/page";
 import { Stagehand } from "../index";
-import { loadApiKeyFromEnv, providerEnvVarMap } from "../utils";
 import { AgentClient } from "./AgentClient";
 import { AISDKAgent } from "./AISDKAgent";
 import { AnthropicCUAClient } from "./AnthropicCUAClient";
 import { OpenAICUAClient } from "./OpenAICUAClient";
-import { parseModelName } from "./utils/modelUtils";
 
 // Map model names to their provider types
 const modelToAgentProviderMap: Record<string, AgentType> = {
@@ -123,30 +120,12 @@ export class AgentProvider {
         );
       }
       const modelName = options.modelName;
-      const model = parseModelName(modelName);
-      if (!model) {
-        throw new Error(`Invalid model format. Use "provider/model-id" format`);
-      }
-
-      const provider = model.provider;
-      const apiKey =
-        options.clientOptions?.apiKey ||
-        loadApiKeyFromEnv(provider, this.logger);
-
-      if (!apiKey) {
-        const envVarName =
-          providerEnvVarMap[provider] || `${provider.toUpperCase()}_API_KEY`;
-        throw new MissingEnvironmentVariableError(
-          envVarName,
-          "Stagehand Agent",
-        );
-      }
 
       return new AISDKAgent({
         stagehand: this.stagehandInstance,
         page: this.page,
         modelName,
-        apiKey: apiKey as string,
+        apiKey: options.clientOptions?.apiKey as string,
         userProvidedInstructions: options.userProvidedInstructions,
       });
     }

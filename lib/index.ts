@@ -46,10 +46,6 @@ import {
   UnsupportedAISDKModelProviderError,
   UnsupportedModelError,
 } from "../types/stagehandErrors";
-import {
-  ensureModelNameHasProvider,
-  extractProvider,
-} from "./agent/utils/modelUtils";
 import { connectToMCPServer } from "./mcp/connection";
 import { resolveTools } from "./mcp/utils";
 
@@ -592,10 +588,10 @@ export class Stagehand {
     if (!modelClientOptions?.apiKey) {
       // If no API key is provided, try to load it from the environment
       if (LLMProvider.getModelProvider(this.modelName) === "aisdk") {
-        const provider = extractProvider(this.modelName);
-        if (provider) {
-          modelApiKey = loadApiKeyFromEnv(provider, this.logger);
-        }
+        modelApiKey = loadApiKeyFromEnv(
+          this.modelName.split("/")[0],
+          this.logger,
+        );
       } else {
         // Temporary add for legacy providers
         modelApiKey =
@@ -910,7 +906,7 @@ export class Stagehand {
 
   /**
    * Create an agent instance that can be executed with different instructions
-   * @returns An agent instance with execute() method, or AISDKAgent when experimental + aisdk
+   * @returns An agent instance with execute() method, or AISDKAgent when aisdk provider is used
    */
   agent(options: AgentConfig & { provider: "aisdk" }): AISDKAgent;
   agent(options?: AgentConfig): {
@@ -1007,9 +1003,7 @@ export class Stagehand {
       this.stagehandPage.page,
     );
 
-    const modelName = ensureModelNameHasProvider(
-      options?.model || this.modelName,
-    );
+    const modelName = options?.model || this.modelName;
 
     const agent = provider.getAgent({
       modelName,
