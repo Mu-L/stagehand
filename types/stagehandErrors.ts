@@ -249,3 +249,11 @@ export class StagehandInitError extends StagehandError {
     super(message);
   }
 }
+
+export class MCPToolAlreadyDefinedError extends StagehandError {
+  constructor(toolName: string) {
+    super(
+      `A tool named "${toolName}" was defined both manually and via an MCP integration. Please remove your manual definition of "${toolName}" from the tools object to avoid conflicts with the MCP-resolved tool.`,
+    );
+  }
+}

@@ -281,7 +281,7 @@ export interface AgentConfig {
   /**
    * MCP integrations - Array of Client objects
    */
-  integrations?: Client[];
+  integrations?: (Client | string)[];
   /**
    * Tools passed to the agent client
    */
